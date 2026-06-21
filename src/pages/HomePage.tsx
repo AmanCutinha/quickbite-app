@@ -34,7 +34,7 @@ const HomePage = () => {
               <Button 
                 size="lg" 
                 variant="outline" 
-                className="border-white text-white hover:bg-white/20"
+                className="bg-white text-food-primary hover:bg-gray-100"
                 onClick={() => navigate("/signup")}
               >
                 Sign Up

@@ -21,6 +21,8 @@ import OrderConfirmationPage from "@/pages/OrderConfirmationPage";
 import DashboardPage from "@/pages/DashboardPage";
 import NotFound from "@/pages/NotFound";
 import UsersPage from "@/pages/UsersPage"; 
+import ManageRestaurants from "@/pages/ManageRestaurants";
+
 
 const queryClient = new QueryClient();
 
@@ -46,6 +48,7 @@ const App = () => (
                   <Route path="/dashboard" element={<DashboardPage />} />
                   <Route path="*" element={<NotFound />} />
                   <Route path="/users" element={<UsersPage />} />
+                  <Route path="/manage-restaurants" element={<ManageRestaurants />} />
                 </Routes>
               </main>
               <Footer />

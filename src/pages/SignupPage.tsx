@@ -15,7 +15,7 @@ const SignupPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [role, setRole] = useState<"customer" | "restaurant_owner">("customer");
+  const [role, setRole] = useState<"customer" | "restaurant_owner" | "admin">("customer");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   
@@ -111,7 +111,7 @@ const SignupPage = () => {
             <RadioGroup 
               defaultValue="customer" 
               value={role}
-              onValueChange={(value) => setRole(value as "customer" | "restaurant_owner")}
+              onValueChange={(value) => setRole(value as "customer" | "restaurant_owner" | "admin")}
               className="flex space-x-4"
             >
               <div className="flex items-center space-x-2">

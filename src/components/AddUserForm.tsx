@@ -10,16 +10,22 @@ const AddUserForm = ({ onUserAdded }: { onUserAdded: () => void }) => {
 
     const newUser = { name, email, role };
 
+    const storedUser = localStorage.getItem("foodUser");
+    const userRole = storedUser ? JSON.parse(storedUser).role : "";
+
     try {
       const response = await fetch("http://localhost:5000/users", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "x-user-role": userRole,
+        },
         body: JSON.stringify(newUser),
       });
 
       if (response.ok) {
         console.log("User added");
-        onUserAdded(); // trigger parent to refresh user list
+        onUserAdded(); // Refresh user list in parent
         setName("");
         setEmail("");
         setRole("customer");
@@ -57,7 +63,8 @@ const AddUserForm = ({ onUserAdded }: { onUserAdded: () => void }) => {
           className="border p-2 w-full"
         >
           <option value="customer">Customer</option>
-          <option value="owner">Owner</option>
+          <option value="restaurant_owner">Owner</option>
+          <option value="admin">Admin</option>
         </select>
       </div>
       <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded">
