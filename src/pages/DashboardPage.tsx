@@ -17,9 +17,19 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@/contexts/AuthContext";
 import { MenuItem } from "@/contexts/CartContext";
-import { getMenuByRestaurantId } from "@/data/mockData";
 import { toast } from "@/hooks/use-toast";
 import { Plus, Pencil, Trash, Clock } from "lucide-react";
+import { Restaurant } from "@/components/RestaurantCard";
+
+interface DbMenuItem {
+  item_id: number;
+  name: string;
+  description: string;
+  price: string;
+  availability: boolean;
+  image_url: string;
+  category_name: string;
+}
 
 // Mock orders
 const mockOrders = [
@@ -103,6 +113,7 @@ const DashboardPage = () => {
   const [menuItemForm, setMenuItemForm] = useState(initialMenuItemForm);
   const [isEditMode, setIsEditMode] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [myRestaurant, setMyRestaurant] = useState<Restaurant | null>(null);
   
   // Check if user is authenticated and is a restaurant owner
   useEffect(() => {
@@ -121,9 +132,33 @@ const DashboardPage = () => {
       return;
     }
     
-    // Load menu items for this restaurant owner
-    // In a real app, this would be filtered by the user's restaurant
-    setMenuItems(getMenuByRestaurantId("r1"));
+    // Fetch restaurant owned by this user
+    fetch("http://localhost:5000/restaurants")
+      .then((res) => res.json())
+      .then((data) => {
+        const owned = data.find((r: Restaurant) => r.owner_id === user.user_id);
+        if (owned) {
+          setMyRestaurant(owned);
+          // Fetch menu for this restaurant
+          fetch(`http://localhost:5000/restaurants/${owned.restaurant_id}/menu`)
+            .then((res) => res.json())
+            .then((menuData) => {
+              const mappedMenu = menuData.map((item: DbMenuItem) => ({
+                id: item.item_id.toString(),
+                name: item.name,
+                description: item.description || '',
+                price: parseFloat(item.price),
+                image: item.image_url || '',
+                category: item.category_name || 'General',
+                available: item.availability,
+                restaurantId: owned.restaurant_id.toString()
+              }));
+              setMenuItems(mappedMenu);
+            })
+            .catch((err) => console.error("Error fetching menu items:", err));
+        }
+      })
+      .catch((err) => console.error("Error fetching owned restaurants:", err));
   }, [isAuthenticated, user, navigate]);
   
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -143,26 +178,69 @@ const DashboardPage = () => {
   };
   
   const handleAddOrUpdateMenuItem = () => {
+    if (!myRestaurant) {
+      toast({
+        title: "Error",
+        description: "You must have a restaurant to manage menu items.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    const payload = {
+      name: menuItemForm.name,
+      description: menuItemForm.description,
+      price: menuItemForm.price,
+      image_url: menuItemForm.image || '',
+      category: menuItemForm.category || 'General',
+      availability: menuItemForm.available,
+      restaurant_id: myRestaurant.restaurant_id
+    };
+
     if (isEditMode) {
       // Update existing item
-      setMenuItems(menuItems.map(item => 
-        item.id === menuItemForm.id ? menuItemForm : item
-      ));
-      toast({
-        title: "Menu item updated",
-        description: `${menuItemForm.name} has been updated.`,
-      });
+      fetch(`http://localhost:5000/menuitems/${menuItemForm.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      })
+        .then((res) => res.json())
+        .then((updatedItem) => {
+          setMenuItems(menuItems.map(item => 
+            item.id === menuItemForm.id ? {
+              ...menuItemForm,
+              price: parseFloat(updatedItem.price),
+              available: updatedItem.availability
+            } : item
+          ));
+          toast({
+            title: "Menu item updated",
+            description: `${menuItemForm.name} has been updated.`,
+          });
+        })
+        .catch((err) => console.error("Error updating menu item:", err));
     } else {
       // Add new item
-      const newItem = {
-        ...menuItemForm,
-        id: `m${Date.now()}`, // Generate a unique ID
-      };
-      setMenuItems([...menuItems, newItem]);
-      toast({
-        title: "Menu item added",
-        description: `${newItem.name} has been added to your menu.`,
-      });
+      fetch("http://localhost:5000/menuitems", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      })
+        .then((res) => res.json())
+        .then((newItem) => {
+          setMenuItems([...menuItems, {
+            ...menuItemForm,
+            id: newItem.item_id.toString(),
+            price: parseFloat(newItem.price),
+            available: newItem.availability,
+            restaurantId: myRestaurant.restaurant_id.toString()
+          }]);
+          toast({
+            title: "Menu item added",
+            description: `${newItem.name} has been added to your menu.`,
+          });
+        })
+        .catch((err) => console.error("Error adding menu item:", err));
     }
     
     // Reset form and close dialog
@@ -179,11 +257,17 @@ const DashboardPage = () => {
   
   const handleDeleteMenuItem = (id: string) => {
     if (window.confirm("Are you sure you want to delete this menu item?")) {
-      setMenuItems(menuItems.filter(item => item.id !== id));
-      toast({
-        title: "Menu item deleted",
-        description: "The menu item has been removed from your menu.",
-      });
+      fetch(`http://localhost:5000/menuitems/${id}`, {
+        method: "DELETE"
+      })
+        .then(() => {
+          setMenuItems(menuItems.filter(item => item.id !== id));
+          toast({
+            title: "Menu item deleted",
+            description: "The menu item has been removed from your menu.",
+          });
+        })
+        .catch((err) => console.error("Error deleting menu item:", err));
     }
   };
   

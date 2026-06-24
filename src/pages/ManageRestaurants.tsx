@@ -4,15 +4,32 @@ import { useAuth } from '@/contexts/AuthContext';
 interface Restaurant {
   restaurant_id: number;
   name: string;
-  location: string;
+  description: string;
+  cuisine: string;
+  address: string;
+  city: string;
+  delivery_time: string;
+  price_range: string;
+  hero_image: string;
+  banner_image: string;
+  featured: boolean;
   owner_id: number;
 }
 
 const ManageRestaurants: React.FC = () => {
   const { user } = useAuth();
   const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
+  
   const [name, setName] = useState('');
-  const [location, setLocation] = useState('');
+  const [description, setDescription] = useState('');
+  const [cuisine, setCuisine] = useState('');
+  const [address, setAddress] = useState('');
+  const [city, setCity] = useState('Foodville');
+  const [deliveryTime, setDeliveryTime] = useState('20-30 min');
+  const [priceRange, setPriceRange] = useState('$$');
+  const [heroImage, setHeroImage] = useState('');
+  const [bannerImage, setBannerImage] = useState('');
+  
   const [editingId, setEditingId] = useState<number | null>(null);
 
   const fetchRestaurants = async () => {
@@ -30,6 +47,18 @@ const ManageRestaurants: React.FC = () => {
     if (user) fetchRestaurants();
   }, [user]);
 
+  const resetForm = () => {
+    setName('');
+    setDescription('');
+    setCuisine('');
+    setAddress('');
+    setCity('Foodville');
+    setDeliveryTime('20-30 min');
+    setPriceRange('$$');
+    setHeroImage('');
+    setBannerImage('');
+  };
+
   const handleAdd = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) return;
@@ -38,11 +67,21 @@ const ManageRestaurants: React.FC = () => {
       const res = await fetch('http://localhost:5000/restaurants', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, location, owner_id: user.user_id }),
+        body: JSON.stringify({
+          name,
+          description,
+          cuisine,
+          address,
+          city,
+          delivery_time: deliveryTime,
+          price_range: priceRange,
+          hero_image: heroImage,
+          banner_image: bannerImage,
+          owner_id: user.user_id,
+        }),
       });
       if (res.ok) {
-        setName('');
-        setLocation('');
+        resetForm();
         fetchRestaurants();
       }
     } catch (err) {
@@ -64,7 +103,14 @@ const ManageRestaurants: React.FC = () => {
   const handleEdit = (restaurant: Restaurant) => {
     setEditingId(restaurant.restaurant_id);
     setName(restaurant.name);
-    setLocation(restaurant.location);
+    setDescription(restaurant.description || '');
+    setCuisine(restaurant.cuisine || '');
+    setAddress(restaurant.address || '');
+    setCity(restaurant.city || 'Foodville');
+    setDeliveryTime(restaurant.delivery_time || '20-30 min');
+    setPriceRange(restaurant.price_range || '$$');
+    setHeroImage(restaurant.hero_image || '');
+    setBannerImage(restaurant.banner_image || '');
   };
 
   const handleUpdate = async (e: React.FormEvent) => {
@@ -77,69 +123,181 @@ const ManageRestaurants: React.FC = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           name,
-          location,
+          description,
+          cuisine,
+          address,
+          city,
+          delivery_time: deliveryTime,
+          price_range: priceRange,
+          hero_image: heroImage,
+          banner_image: bannerImage,
           owner_id: user.user_id,
         }),
       });
       setEditingId(null);
-      setName('');
-      setLocation('');
+      resetForm();
       fetchRestaurants();
     } catch (err) {
       console.error('Update error', err);
     }
   };
 
-  if (!user || user.role !== 'restaurant_owner') {
-    return <p className="p-4">Access denied. Only restaurant owners can manage restaurants.</p>;
+  if (!user || (user.role !== 'restaurant_owner' && user.role !== 'admin')) {
+    return <p className="p-4">Access denied. Only restaurant owners and administrators can manage restaurants.</p>;
   }
 
   return (
-    <div className="p-4 max-w-xl mx-auto">
-      <h1 className="text-xl font-semibold mb-4">Manage Restaurants</h1>
+    <div className="p-6 max-w-2xl mx-auto animate-fade-in">
+      <h1 className="text-2xl font-bold mb-6 text-gray-900">Manage Restaurants</h1>
 
-      <form onSubmit={editingId ? handleUpdate : handleAdd} className="mb-6 space-y-2">
-        <input
-          type="text"
-          placeholder="Restaurant name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          className="border p-2 w-full"
-          required
-        />
-        <input
-          type="text"
-          placeholder="Location"
-          value={location}
-          onChange={(e) => setLocation(e.target.value)}
-          className="border p-2 w-full"
-          required
-        />
-        <button
-          type="submit"
-          className="bg-blue-600 text-white px-4 py-2 rounded"
-        >
-          {editingId ? 'Update' : 'Add'} Restaurant
-        </button>
+      <form onSubmit={editingId ? handleUpdate : handleAdd} className="mb-8 space-y-4 bg-white p-6 border rounded-lg shadow-sm">
+        <h2 className="text-lg font-semibold text-gray-800">{editingId ? 'Edit' : 'Add New'} Restaurant</h2>
+        
+        <div>
+          <label className="text-sm font-medium text-gray-700 block mb-1">Restaurant Name</label>
+          <input
+            type="text"
+            placeholder="e.g. Tasty Burgers"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            className="border p-2 w-full rounded"
+            required
+          />
+        </div>
+
+        <div>
+          <label className="text-sm font-medium text-gray-700 block mb-1">Description</label>
+          <textarea
+            placeholder="Describe the restaurant..."
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            className="border p-2 w-full rounded min-h-[80px]"
+            required
+          />
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="text-sm font-medium text-gray-700 block mb-1">Cuisine Type</label>
+            <input
+              type="text"
+              placeholder="e.g. American, Italian"
+              value={cuisine}
+              onChange={(e) => setCuisine(e.target.value)}
+              className="border p-2 w-full rounded"
+              required
+            />
+          </div>
+          <div>
+            <label className="text-sm font-medium text-gray-700 block mb-1">Price Range</label>
+            <input
+              type="text"
+              placeholder="e.g. $, $$, $$$"
+              value={priceRange}
+              onChange={(e) => setPriceRange(e.target.value)}
+              className="border p-2 w-full rounded"
+              required
+            />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="text-sm font-medium text-gray-700 block mb-1">Delivery Time</label>
+            <input
+              type="text"
+              placeholder="e.g. 20-30 min"
+              value={deliveryTime}
+              onChange={(e) => setDeliveryTime(e.target.value)}
+              className="border p-2 w-full rounded"
+              required
+            />
+          </div>
+          <div>
+            <label className="text-sm font-medium text-gray-700 block mb-1">City</label>
+            <input
+              type="text"
+              placeholder="e.g. Foodville"
+              value={city}
+              onChange={(e) => setCity(e.target.value)}
+              className="border p-2 w-full rounded"
+              required
+            />
+          </div>
+        </div>
+
+        <div>
+          <label className="text-sm font-medium text-gray-700 block mb-1">Street Address</label>
+          <input
+            type="text"
+            placeholder="e.g. 123 Burger St"
+            value={address}
+            onChange={(e) => setAddress(e.target.value)}
+            className="border p-2 w-full rounded"
+            required
+          />
+        </div>
+
+        <div>
+          <label className="text-sm font-medium text-gray-700 block mb-1">Hero Image URL</label>
+          <input
+            type="text"
+            placeholder="https://..."
+            value={heroImage}
+            onChange={(e) => setHeroImage(e.target.value)}
+            className="border p-2 w-full rounded"
+            required
+          />
+        </div>
+
+        <div>
+          <label className="text-sm font-medium text-gray-700 block mb-1">Banner Image URL</label>
+          <input
+            type="text"
+            placeholder="https://..."
+            value={bannerImage}
+            onChange={(e) => setBannerImage(e.target.value)}
+            className="border p-2 w-full rounded"
+            required
+          />
+        </div>
+
+        <div className="flex space-x-2 pt-2">
+          <button
+            type="submit"
+            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded font-medium flex-1"
+          >
+            {editingId ? 'Update' : 'Add'} Restaurant
+          </button>
+          {editingId && (
+            <button
+              type="button"
+              onClick={() => { setEditingId(null); resetForm(); }}
+              className="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded font-medium"
+            >
+              Cancel
+            </button>
+          )}
+        </div>
       </form>
 
-      <ul>
+      <ul className="space-y-4">
         {restaurants.map((r) => (
-          <li key={r.restaurant_id} className="border p-2 mb-2 flex justify-between items-center">
+          <li key={r.restaurant_id} className="border p-4 bg-white rounded-lg shadow-sm flex justify-between items-center">
             <div>
-              <p className="font-medium">{r.name}</p>
-              <p className="text-sm text-gray-600">{r.location}</p>
+              <p className="font-semibold text-lg text-gray-800">{r.name}</p>
+              <p className="text-sm text-gray-500">{r.address}, {r.city} • {r.cuisine}</p>
             </div>
             <div className="space-x-2">
               <button
                 onClick={() => handleEdit(r)}
-                className="text-blue-500 hover:underline"
+                className="text-blue-600 hover:text-blue-800 font-medium text-sm"
               >
                 Edit
               </button>
               <button
                 onClick={() => handleDelete(r.restaurant_id)}
-                className="text-red-500 hover:underline"
+                className="text-red-600 hover:text-red-800 font-medium text-sm"
               >
                 Delete
               </button>

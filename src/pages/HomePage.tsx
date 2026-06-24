@@ -1,14 +1,27 @@
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Search, UtensilsCrossed, Clock, Star } from "lucide-react";
-import { restaurants } from "@/data/mockData";
-import RestaurantCard from "@/components/RestaurantCard";
+import RestaurantCard, { Restaurant } from "@/components/RestaurantCard";
 
 const HomePage = () => {
   const navigate = useNavigate();
-  const featuredRestaurants = restaurants.slice(0, 3);
+  const [featuredRestaurants, setFeaturedRestaurants] = useState<Restaurant[]>([]);
+
+  useEffect(() => {
+    fetch("http://localhost:5000/restaurants")
+      .then((res) => res.json())
+      .then((data) => {
+        const featured = data.filter((r: Restaurant) => r.featured === true).slice(0, 3);
+        if (featured.length > 0) {
+          setFeaturedRestaurants(featured);
+        } else {
+          setFeaturedRestaurants(data.slice(0, 3));
+        }
+      })
+      .catch((err) => console.error("Error fetching featured restaurants:", err));
+  }, []);
   
   return (
     <div className="animate-fade-in">
@@ -108,7 +121,7 @@ const HomePage = () => {
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {featuredRestaurants.map((restaurant) => (
-              <RestaurantCard key={restaurant.id} restaurant={restaurant} />
+              <RestaurantCard key={restaurant.restaurant_id} restaurant={restaurant} />
             ))}
           </div>
         </div>

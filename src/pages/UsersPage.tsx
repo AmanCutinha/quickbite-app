@@ -38,6 +38,16 @@ const UsersPage = () => {
     fetchUsers();
   }, []);
 
+  const storedUser = localStorage.getItem("foodUser");
+  const currentUser = storedUser ? JSON.parse(storedUser) : null;
+  if (!currentUser || (currentUser.role !== 'admin' && currentUser.role !== 'restaurant_owner')) {
+    return (
+      <div className="p-6 text-center text-red-500 font-semibold max-w-md mx-auto mt-10 border rounded bg-red-50">
+        Access denied. Only administrators and restaurant owners can access this page.
+      </div>
+    );
+  }
+
   const handleDelete = async (userId: number) => {
     try {
       const response = await fetch(`http://localhost:5000/users/${userId}`, {

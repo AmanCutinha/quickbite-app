@@ -1,21 +1,31 @@
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "@/hooks/use-toast";
 import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/contexts/AuthContext";
-import { getRestaurantById } from "@/data/mockData";
 import CartItem from "@/components/CartItem";
 import { ShoppingBag, ArrowRight } from "lucide-react";
+import { Restaurant } from "@/components/RestaurantCard";
 
 const CartPage = () => {
   const navigate = useNavigate();
   const { cart, totalItems, totalPrice, clearCart, restaurantId } = useCart();
   const { isAuthenticated } = useAuth();
-  
-  const restaurant = restaurantId ? getRestaurantById(restaurantId) : undefined;
+  const [restaurant, setRestaurant] = useState<Restaurant | null>(null);
+
+  useEffect(() => {
+    if (restaurantId) {
+      fetch(`http://localhost:5000/restaurants/${restaurantId}`)
+        .then((res) => res.json())
+        .then((data) => setRestaurant(data))
+        .catch((err) => console.error("Error fetching restaurant in cart:", err));
+    } else {
+      setRestaurant(null);
+    }
+  }, [restaurantId]);
   
   const handleCheckout = () => {
     if (!isAuthenticated) {
@@ -66,13 +76,13 @@ const CartPage = () => {
             <div className="bg-white rounded-lg shadow-sm p-4 mb-6">
               <div className="flex items-center">
                 <img 
-                  src={restaurant.image} 
+                  src={restaurant.hero_image || 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?ixlib=rb-1.2.1'} 
                   alt={restaurant.name} 
                   className="w-16 h-16 object-cover rounded mr-4"
                 />
                 <div>
                   <h3 className="font-semibold">{restaurant.name}</h3>
-                  <p className="text-sm text-gray-500">{restaurant.cuisine} • {restaurant.deliveryTime}</p>
+                  <p className="text-sm text-gray-500">{restaurant.cuisine} • {restaurant.delivery_time}</p>
                 </div>
               </div>
             </div>
