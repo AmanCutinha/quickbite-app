@@ -181,43 +181,13 @@ npm install
 ```
 
 ### Step 3: Database Setup
-Login to your PostgreSQL terminal and run the database setup commands:
-```sql
-CREATE DATABASE food_ordering;
-\c food_ordering;
+Login to your PostgreSQL terminal, create the database, and execute the migration file:
+```bash
+# Create the database
+psql -U postgres -h localhost -c "CREATE DATABASE food_ordering;"
 
--- Run the following commands to initialize the schema:
-CREATE TABLE users (
-    user_id SERIAL PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
-    email VARCHAR(100) UNIQUE NOT NULL,
-    role VARCHAR(20) NOT NULL CHECK (role IN ('customer', 'restaurant_owner', 'admin')),
-    password TEXT
-);
-
-CREATE TABLE restaurants (
-    restaurant_id SERIAL PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
-    location VARCHAR(255) NOT NULL,
-    owner_id INT REFERENCES users(user_id) ON DELETE CASCADE,
-    image_url TEXT
-);
-
-CREATE TABLE menuitems (
-    item_id SERIAL PRIMARY KEY,
-    restaurant_id INT REFERENCES restaurants(restaurant_id) ON DELETE CASCADE,
-    name VARCHAR(100) NOT NULL,
-    price NUMERIC(10,2) NOT NULL CHECK (price > 0),
-    availability BOOLEAN DEFAULT true
-);
-
-CREATE TABLE orderdetails (
-    order_id SERIAL PRIMARY KEY,
-    user_id INT REFERENCES users(user_id) ON DELETE CASCADE,
-    item_id INT REFERENCES menuitems(item_id) ON DELETE CASCADE,
-    quantity INT NOT NULL CHECK (quantity > 0),
-    order_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
+# Run the schema migration and insert initial seeds
+psql -U postgres -h localhost -d food_ordering -f backend/db_migration.sql
 ```
 
 ### Step 4: Environment Configurations
