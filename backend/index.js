@@ -6,18 +6,20 @@ import bcrypt from 'bcrypt';
 const { Pool } = pkg;
 
 const app = express();
-const port = 5000;
+const port = process.env.PORT || 5000;
 
 app.use(cors());
 app.use(express.json());
 
-const pool = new Pool({
-  user: 'postgres',
-  host: 'localhost',
-  database: 'food_ordering',
-  password: 'aman1234',
-  port: 5432,
-});
+const pool = process.env.DATABASE_URL
+  ? new Pool({ connectionString: process.env.DATABASE_URL })
+  : new Pool({
+      user: process.env.DB_USER || 'postgres',
+      host: process.env.DB_HOST || 'localhost',
+      database: process.env.DB_NAME || 'food_ordering',
+      password: process.env.DB_PASSWORD,
+      port: process.env.DB_PORT ? parseInt(process.env.DB_PORT, 10) : 5432,
+    });
 
 // Middleware to check user role
 const checkUserRole = (req, res, next) => {
@@ -130,7 +132,7 @@ app.delete('/users/:id', checkUserRole, async (req, res) => {
 // RESTAURANTS ROUTES
 app.get('/restaurants', async (req, res) => {
   try {
-    const result = await pool.query('SELECT * FROM restaurants ORDER BY restaurant_id ASC');
+    const result = await pool.query('SELECT * FROM restaurants');
     res.json(result.rows);
   } catch (err) {
     console.error('Error fetching restaurants:', err.message);
@@ -138,47 +140,16 @@ app.get('/restaurants', async (req, res) => {
   }
 });
 
-app.get('/restaurants/:id', async (req, res) => {
-  const restaurantId = req.params.id;
-  try {
-    const result = await pool.query('SELECT * FROM restaurants WHERE restaurant_id = $1', [restaurantId]);
-    if (result.rows.length === 0) {
-      return res.status(404).json({ message: 'Restaurant not found' });
-    }
-    res.json(result.rows[0]);
-  } catch (err) {
-    console.error('Error fetching restaurant details:', err.message);
-    res.status(500).send('Server error');
-  }
-});
-
-app.get('/restaurants/:id/menu', async (req, res) => {
-  const restaurantId = req.params.id;
-  try {
-    const result = await pool.query(`
-      SELECT mi.item_id, mi.name, mi.description, mi.price, mi.availability, mi.image_url, mc.name as category_name
-      FROM menuitems mi
-      LEFT JOIN menu_categories mc ON mi.category_id = mc.id
-      WHERE mi.restaurant_id = $1
-      ORDER BY mi.item_id ASC
-    `, [restaurantId]);
-    res.json(result.rows);
-  } catch (err) {
-    console.error('Error fetching menu:', err.message);
-    res.status(500).send('Server error');
-  }
-});
-
 app.post('/restaurants', async (req, res) => {
-  const { name, description, cuisine, address, city, delivery_time, price_range, hero_image, banner_image, owner_id } = req.body;
-  if (!name || !description || !cuisine || !address || !delivery_time || !price_range || !hero_image || !banner_image || !owner_id) {
+  const { name, location, owner_id } = req.body;
+  if (!name || !location || !owner_id) {
     return res.status(400).json({ error: 'Missing required fields' });
   }
 
   try {
     const result = await pool.query(
-      'INSERT INTO restaurants (name, description, cuisine, address, city, delivery_time, price_range, hero_image, banner_image, owner_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING *',
-      [name, description, cuisine, address, city || 'Foodville', delivery_time, price_range, hero_image, banner_image, owner_id]
+      'INSERT INTO restaurants (name, location, owner_id) VALUES ($1, $2, $3) RETURNING *',
+      [name, location, owner_id]
     );
     res.status(201).json(result.rows[0]);
   } catch (err) {
@@ -189,12 +160,12 @@ app.post('/restaurants', async (req, res) => {
 
 app.put('/restaurants/:id', async (req, res) => {
   const restaurantId = req.params.id;
-  const { name, description, cuisine, address, city, delivery_time, price_range, hero_image, banner_image, owner_id } = req.body;
+  const { name, location, owner_id } = req.body;
 
   try {
     const result = await pool.query(
-      'UPDATE restaurants SET name = $1, description = $2, cuisine = $3, address = $4, city = $5, delivery_time = $6, price_range = $7, hero_image = $8, banner_image = $9, owner_id = $10 WHERE restaurant_id = $11 RETURNING *',
-      [name, description, cuisine, address, city || 'Foodville', delivery_time, price_range, hero_image, banner_image, owner_id, restaurantId]
+      'UPDATE restaurants SET name = $1, location = $2, owner_id = $3 WHERE restaurant_id = $4 RETURNING *',
+      [name, location, owner_id, restaurantId]
     );
     res.json(result.rows[0]);
   } catch (err) {
@@ -211,74 +182,6 @@ app.delete('/restaurants/:id', async (req, res) => {
     res.status(200).json({ message: 'Restaurant deleted successfully' });
   } catch (err) {
     console.error('Error deleting restaurant:', err.message);
-    res.status(500).send('Server error');
-  }
-});
-
-// MENU ITEMS ROUTES
-app.post('/menuitems', async (req, res) => {
-  const { name, description, price, image_url, category, availability, restaurant_id } = req.body;
-  if (!name || !price || !restaurant_id) {
-    return res.status(400).json({ error: 'Missing required fields' });
-  }
-
-  try {
-    // 1. Get or create category_id
-    let categoryId = null;
-    if (category) {
-      const catResult = await pool.query(
-        'INSERT INTO menu_categories (restaurant_id, name) VALUES ($1, $2) ON CONFLICT (restaurant_id, name) DO UPDATE SET name = EXCLUDED.name RETURNING id',
-        [restaurant_id, category]
-      );
-      categoryId = catResult.rows[0].id;
-    }
-
-    // 2. Insert menu item
-    const result = await pool.query(
-      'INSERT INTO menuitems (name, description, price, image_url, category_id, availability, restaurant_id) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
-      [name, description, price, image_url, categoryId, availability !== undefined ? availability : true, restaurant_id]
-    );
-    res.status(201).json(result.rows[0]);
-  } catch (err) {
-    console.error('Error adding menu item:', err.message);
-    res.status(500).send('Server error');
-  }
-});
-
-app.put('/menuitems/:id', async (req, res) => {
-  const itemId = req.params.id;
-  const { name, description, price, image_url, category, availability, restaurant_id } = req.body;
-
-  try {
-    // 1. Get or create category_id
-    let categoryId = null;
-    if (category && restaurant_id) {
-      const catResult = await pool.query(
-        'INSERT INTO menu_categories (restaurant_id, name) VALUES ($1, $2) ON CONFLICT (restaurant_id, name) DO UPDATE SET name = EXCLUDED.name RETURNING id',
-        [restaurant_id, category]
-      );
-      categoryId = catResult.rows[0].id;
-    }
-
-    // 2. Update menu item
-    const result = await pool.query(
-      'UPDATE menuitems SET name = $1, description = $2, price = $3, image_url = $4, category_id = COALESCE($5, category_id), availability = $6 WHERE item_id = $7 RETURNING *',
-      [name, description, price, image_url, categoryId, availability, itemId]
-    );
-    res.json(result.rows[0]);
-  } catch (err) {
-    console.error('Error updating menu item:', err.message);
-    res.status(500).send('Server error');
-  }
-});
-
-app.delete('/menuitems/:id', async (req, res) => {
-  const itemId = req.params.id;
-  try {
-    await pool.query('DELETE FROM menuitems WHERE item_id = $1', [itemId]);
-    res.status(200).json({ message: 'Menu item deleted successfully' });
-  } catch (err) {
-    console.error('Error deleting menu item:', err.message);
     res.status(500).send('Server error');
   }
 });

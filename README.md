@@ -1,172 +1,178 @@
-# 🍔 QuickBite
+# 🍔 QuickBite – Online Food Ordering Platform
 
-[![React](https://img.shields.io/badge/React-18.3-blue.svg?logo=react)](https://react.dev/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.5-blue.svg?logo=typescript)](https://www.typescriptlang.org/)
-[![Vite](https://img.shields.io/badge/Vite-5.4-646CFF.svg?logo=vite)](https://vitejs.dev/)
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4-38B2AC.svg?logo=tailwind-css)](https://tailwindcss.com/)
-[![Express.js](https://img.shields.io/badge/Express.js-5.1-000000.svg?logo=express)](https://expressjs.com/)
-[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-14.0-4169E1.svg?logo=postgresql)](https://www.postgresql.org/)
-[![Axios](https://img.shields.io/badge/Axios-1.8-5A29E4.svg?logo=axios)](https://axios-http.com/)
+[![React](https://img.shields.io/badge/React-18.3-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://reactjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.5-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Vite](https://img.shields.io/badge/Vite-5.4-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
+[![ShadCN UI](https://img.shields.io/badge/ShadCN_UI-Latest-000000?style=for-the-badge&logo=shadcnui&logoColor=white)](https://ui.shadcn.com/)
+[![Axios](https://img.shields.io/badge/Axios-1.8-5A29E4?style=for-the-badge&logo=axios&logoColor=white)](https://axios-http.com/)
 
-QuickBite is a modern, responsive, full-stack online food ordering platform. It provides a cohesive experience connecting hungry customers, restaurant owners, and platform administrators. Built with a robust React SPA frontend, an Express.js backend, and a relational PostgreSQL database, it delivers smooth interactions from browsing menus to placing virtual orders.
+[![Node.js](https://img.shields.io/badge/Node.js-18+-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)](https://nodejs.org/)
+[![Express.js](https://img.shields.io/badge/Express.js-5.1-000000?style=for-the-badge&logo=express&logoColor=white)](https://expressjs.com/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-14+-4169E1?style=for-the-badge&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
+[![JWT Authentication](https://img.shields.io/badge/JWT-Auth-000000?style=for-the-badge&logo=jsonwebtokens&logoColor=white)](https://jwt.io/)
+[![Docker](https://img.shields.io/badge/Docker-Enabled-2496ED?style=for-the-badge&logo=docker&logoColor=white)](https://www.docker.com/)
+[![Git](https://img.shields.io/badge/Git-VCS-F05032?style=for-the-badge&logo=git&logoColor=white)](https://git-scm.com/)
 
----
-
-## 💼 The Business Problem Solved
-
-Traditional local dining experiences often suffer from fragmented workflows. Customers find it difficult to browse menus digitially, restaurant owners struggle to manage menu offerings without technical assistance, and platform administrators have no direct visibility over user roles.
-
-QuickBite consolidates these interactions into a single, unified interface:
-*   **For Customers**: Offers a streamlined, visually rich digital catalog where users can find local restaurants, browse categories, maintain a persistent shopping cart, and place orders.
-*   **For Restaurant Owners**: Provides self-service menu management panels and real-time dashboard analytics to view pending, preparing, and completed orders.
-*   **For Administrators**: Grants absolute user management controls to create, update, delete, and audit account credentials and roles.
+A full-stack web application designed for online food ordering. QuickBite connects customers with local dining establishments through an intuitive digital ordering pipeline and provides restaurant managers and platform administrators with granular administrative tools.
 
 ---
 
-## ⚙️ Architecture Overview
+## 📋 Table of Contents
+- [Project Overview](#-project-overview)
+- [Key Features](#-key-features)
+- [Tech Stack](#-tech-stack)
+- [System Architecture](#-system-architecture)
+- [Folder Structure](#-folder-structure)
+- [Installation Guide](#-installation-guide)
+- [Environment Variables](#-environment-variables)
+- [API Overview](#-api-overview)
+- [Future Improvements](#-future-improvements)
+- [Learning Outcomes](#-learning-outcomes)
+- [Contributing](#-contributing)
 
-QuickBite uses a classic three-tier architecture that segregates presentation, application logic, and data storage.
+---
+
+## 📌 Project Overview
+
+**QuickBite** is a full-stack online food ordering web application that allows users to browse restaurants, explore menus, add food items to a shopping cart, securely place orders, and manage their profiles. Restaurant owners and administrators can manage restaurants, menus, and incoming orders through a centralized administrative dashboard.
+
+### Core Objectives & Engineering Highlights
+- **Full-Stack Integration**: Built with a decoupled React SPA frontend and a Node.js/Express REST backend backed by PostgreSQL.
+- **Role-Based Authorization (RBAC)**: Enforces access restrictions across Customer, Restaurant Owner, and Admin permissions.
+- **RESTful API Architecture**: Strict separation of concerns using standardized HTTP methods, JSON responses, and stateless JWT authentication.
+- **Responsive UI/UX System**: Interface styled using Tailwind CSS and ShadCN UI primitives for dynamic interactions across mobile and desktop devices.
+
+---
+
+## ✨ Key Features
+
+### 🛒 Customer Features
+- **User Registration & Login**: Account creation and authentication flow with session persistence.
+- **Secure JWT Authentication**: Protected client routes and persistent user sessions.
+- **Browse Restaurants**: Dynamic listing of available restaurants with metadata and visual badges.
+- **View Restaurant Menus**: Detailed menu view categorized by dish types and availability.
+- **Search Food Items**: Client-side and backend search capabilities for instant food lookup.
+- **Cart Management**: Add items to cart, update item quantities dynamically, or remove items.
+- **Place Orders**: Checkout pipeline for order confirmation and virtual order creation.
+- **Order History**: Historical overview of past user orders and status updates.
+- **User Profile Management**: View and edit user details and account preferences.
+
+### 🛡️ Admin & Owner Features
+- **Restaurant Management**: Create, update, and remove restaurant listings.
+- **Menu Management**: Add, update, toggle availability, and delete menu items per restaurant.
+- **Order Management**: Monitor incoming customer orders, track processing lifecycle, and update order statuses.
+- **User Management**: Administrative overview to view, modify roles, or delete registered user accounts.
+
+### 🔒 Security Features
+- **JWT Authentication**: Stateless token generation and verification for authorized endpoints.
+- **Password Hashing**: Salted password hashing powered by `bcrypt` prior to database persistence.
+- **Protected API Routes**: Server-side middleware validation preventing unauthenticated endpoint access.
+- **Input Validation**: Strict request body validation ensuring schema compliance.
+- **Role-Based Authorization**: Route-level and UI-level permission barriers (`Customer`, `Restaurant Owner`, `Admin`).
+
+---
+
+## 🛠️ Tech Stack
+
+### Frontend
+- **Framework**: [React 18](https://react.dev/) + [TypeScript](https://www.typescriptlang.org/)
+- **Build Tool**: [Vite](https://vitejs.dev/)
+- **Styling**: [Tailwind CSS](https://tailwindcss.com/) + [ShadCN UI](https://ui.shadcn.com/)
+- **HTTP Client**: [Axios](https://axios-http.com/)
+
+### Backend
+- **Runtime**: [Node.js](https://nodejs.org/)
+- **Framework**: [Express.js](https://expressjs.com/)
+
+### Database
+- **Database Engine**: [PostgreSQL](https://www.postgresql.org/)
+
+### Authentication & Security
+- **Authentication**: JWT (JSON Web Tokens)
+- **Password Encryption**: `bcrypt`
+
+### Infrastructure & Tools
+- **Containerization**: [Docker](https://www.docker.com/)
+- **Version Control**: [Git](https://git-scm.com/) & [GitHub](https://github.com/)
+
+---
+
+## 🏗️ System Architecture
+
+QuickBite follows a classic client-server multi-tier architecture with stateless REST endpoints and relational data persistence.
 
 ```
-+-------------------------------------------------------------+
-|                        Client Layer                         |
-|   +-----------------------------------------------------+   |
-|   |                  React Frontend                     |   |
-|   |   (Axios Client, React Context, Tailwind CSS)       |   |
-|   +-----------------------------------------------------+   |
-+------------------------------|------------------------------+
-                               |
-                     HTTP Requests (JSON)
-                               |
-                               v
-+-------------------------------------------------------------+
-|                        Server Layer                         |
-|   +-----------------------------------------------------+   |
-|   |                  Express.js API                     |   |
-|   |        (Cors, Express JSON Parser, bcrypt)          |   |
-|   +-----------------------------------------------------+   |
-+------------------------------|------------------------------+
-                               |
-                        SQL Queries (pg)
-                               |
-                               v
-+-------------------------------------------------------------+
-|                       Database Layer                        |
-|   +-----------------------------------------------------+   |
-|   |                   PostgreSQL                        |   |
-|   |   (users, restaurants, menuitems, orderdetails)     |   |
-|   +-----------------------------------------------------+   |
-+-------------------------------------------------------------+
++-------------------------------------------------------------------+
+|                           CLIENT TIER                             |
+|  React 18 + TypeScript SPA | Vite | Tailwind CSS | ShadCN UI      |
+|  - Auth Context & Cart State Management                            |
+|  - Axios Client with Request Interceptors                         |
++---------------------------------|---------------------------------+
+                                  |
+                        HTTPS / JSON Requests
+                                  |
+                                  v
++-------------------------------------------------------------------+
+|                           SERVER TIER                             |
+|  Node.js + Express REST API Gateway                               |
+|  - Authentication Middleware (JWT Validation)                     |
+|  - Role-Based Access Control (RBAC Enforcement)                   |
+|  - Input Validation & Controller Handlers                         |
++---------------------------------|---------------------------------+
+                                  |
+                       SQL Queries (node-postgres)
+                                  |
+                                  v
++-------------------------------------------------------------------+
+|                          DATABASE TIER                            |
+|  PostgreSQL Relational Database Engine                             |
+|  - Tables: users, restaurants, menuitems, orderdetails            |
+|  - Foreign Key Constraints & Cascading Referential Integrity      |
++-------------------------------------------------------------------+
 ```
-
----
-
-## 🛠️ Tech Stack Details
-
-*   **Frontend**: 
-    *   `React` & `TypeScript` for structured, type-safe interactive components.
-    *   `Vite` for ultra-fast module bunding and build processing.
-    *   `Tailwind CSS` & `shadcn/ui` (Radix UI primitives) for responsive styling and customized modern components.
-    *   `React Router Dom` for dynamic client-side SPA routing.
-*   **Backend**: 
-    *   `Node.js` & `Express.js` for lightweight RESTful API route dispatching.
-    *   `bcrypt` for secure hashing of user credentials.
-*   **Database**: 
-    *   `PostgreSQL` relational database management.
-    *   `pg` (node-postgres) connection pool manager for high-performance querying.
-*   **HTTP Client**: 
-    *   `Axios` for custom client interceptors and HTTP requests.
 
 ---
 
 ## 📂 Folder Structure
 
 ```
-quick-bite/
+quickbite/
 ├── backend/
-│   └── index.js             # Express API Server (DB Pool & Route Endpoints)
-├── public/                  # Static assets and public images
+│   ├── index.js                # Express API server entry point & REST endpoints
+│   └── db_migration.sql        # Database schema definitions & initial seeds
+├── public/                     # Public static assets & favicon assets
 ├── src/
-│   ├── components/          # Reusable UI component library (shadcn, form controls)
-│   │   └── ui/              # Radix UI wrapper primitives (buttons, inputs, dialogs)
-│   ├── contexts/            # React AuthContext and CartContext states
-│   ├── data/                # Static mock data fallback profiles
-│   ├── hooks/               # Custom hooks (toast systems, mobile state checks)
-│   ├── lib/                 # Core helper scripts (utility styles consolidator)
-│   ├── pages/               # Application page views (Home, Dashboard, Details)
-│   ├── App.tsx              # Application entry component and routing layout
-│   └── main.tsx             # DOM rendering entry point
-├── package.json             # Root dependency configuration
-├── tailwind.config.ts       # Tailwind CSS design tokens and style config
-├── tsconfig.json            # TypeScript compiler options
-└── vite.config.ts           # Vite compilation profile
+│   ├── components/             # Reusable UI component modules
+│   │   └── ui/                 # ShadCN UI primitive components (Button, Dialog, etc.)
+│   ├── contexts/               # React Context providers (AuthContext, CartContext)
+│   ├── data/                   # Mock data and fallback static profiles
+│   ├── hooks/                  # Custom React hooks (toast system, UI utility hooks)
+│   ├── lib/                    # Core utility functions (Tailwind merge helpers)
+│   ├── pages/                  # Page-level view components (Home, Restaurant, Cart, Admin)
+│   ├── App.tsx                 # Main application component & React Router setup
+│   ├── index.css               # Global Tailwind CSS definitions & design tokens
+│   └── main.tsx                # Application DOM entry mount point
+├── .env.example                # Template for backend environment configuration
+├── docker-compose.yml          # Container configuration for backend & database
+├── package.json                # Project dependencies and script definitions
+├── tailwind.config.ts          # Tailwind design system configuration
+├── tsconfig.json               # TypeScript compiler options
+└── vite.config.ts              # Vite bundler build settings
 ```
 
 ---
 
-## 🗄️ Database Schema Overview
+## ⚙️ Installation Guide
 
-The database layer consists of four highly constrained tables inside PostgreSQL:
-
-### 1. `users`
-Stores user profile information and authentication credentials.
-*   `user_id` (SERIAL PRIMARY KEY)
-*   `name` (VARCHAR(100), NOT NULL)
-*   `email` (VARCHAR(100), UNIQUE, NOT NULL)
-*   `role` (VARCHAR(20), CHECK role IN ('customer', 'restaurant_owner', 'admin'))
-*   `password` (TEXT, Nullable for admin-created placeholders)
-
-### 2. `restaurants`
-Stores restaurant profiles linked to platform owner accounts.
-*   `restaurant_id` (SERIAL PRIMARY KEY)
-*   `name` (VARCHAR(100), NOT NULL)
-*   `location` (VARCHAR(255), NOT NULL)
-*   `owner_id` (INT, FOREIGN KEY referencing `users(user_id)` ON DELETE CASCADE)
-*   `image_url` (TEXT)
-
-### 3. `menuitems`
-Stores the individual dishes available across restaurants.
-*   `item_id` (SERIAL PRIMARY KEY)
-*   `restaurant_id` (INT, FOREIGN KEY referencing `restaurants(restaurant_id)` ON DELETE CASCADE)
-*   `name` (VARCHAR(100), NOT NULL)
-*   `price` (NUMERIC(10,2), NOT NULL CHECK price > 0)
-*   `availability` (BOOLEAN, DEFAULT true)
-
-### 4. `orderdetails`
-Stores line items for submitted virtual orders.
-*   `order_id` (SERIAL PRIMARY KEY)
-*   `user_id` (INT, FOREIGN KEY referencing `users(user_id)` ON DELETE CASCADE)
-*   `item_id` (INT, FOREIGN KEY referencing `menuitems(item_id)` ON DELETE CASCADE)
-*   `quantity` (INT, NOT NULL CHECK quantity > 0)
-*   `order_date` (TIMESTAMP, DEFAULT CURRENT_TIMESTAMP)
-
----
-
-## 🛣️ API Endpoints Summary
-
-### Authentication
-*   `POST /api/auth/signup` - Registers a new user account (hashes credentials and stores in database).
-*   `POST /api/auth/login` - Validates user password hashes and initiates local storage sessions.
-
-### User Management (Protected)
-*   `GET /users` - Fetches all registered users (Admin and Owner access only).
-*   `POST /users` - Directly inserts a new user record.
-*   `PUT /users/:id` - Updates specific user credentials and metadata.
-*   `DELETE /users/:id` - Deletes a user profile from the database.
-
-### Restaurant Management
-*   `GET /restaurants` - Retrieves a list of all active restaurants.
-*   `POST /restaurants` - Registers a new restaurant profile linked to an owner ID.
-*   `PUT /restaurants/:id` - Updates location and naming credentials of a restaurant.
-*   `DELETE /restaurants/:id` - Removes a restaurant profile and cascades deletions to its menu.
-
----
-
-## 🛠️ Installation & Setup
+Follow these step-by-step instructions to clone, configure, and run QuickBite locally.
 
 ### Prerequisites
-*   [Node.js](https://nodejs.org/) (v18.0.0 or higher)
-*   [PostgreSQL](https://www.postgresql.org/) (v14.0 or higher)
+- **Node.js** (`v18.0.0` or higher)
+- **npm** (`v9.0.0` or higher)
+- **PostgreSQL** (`v14.0` or higher)
+
+---
 
 ### Step 1: Clone the Repository
 ```bash
@@ -174,69 +180,127 @@ git clone https://github.com/your-username/quickbite.git
 cd quickbite
 ```
 
-### Step 2: Install Dependencies
-Install all package requirements in the project root:
-```bash
-npm install
-```
+---
 
-### Step 3: Database Setup
-Login to your PostgreSQL terminal, create the database, and execute the migration file:
-```bash
-# Create the database
-psql -U postgres -h localhost -c "CREATE DATABASE food_ordering;"
+### Step 2: Backend Setup & Database Migration
 
-# Run the schema migration and insert initial seeds
-psql -U postgres -h localhost -d food_ordering -f backend/db_migration.sql
-```
+1. **Navigate to the root and install backend dependencies:**
+   ```bash
+   npm install
+   ```
 
-### Step 4: Environment Configurations
-By default, the Express server connects to the database via direct settings inside the pool. Update [backend/index.js](file:///home/amancutinha/Projects/quickbite/quick-bite-order-online-main/backend/index.js) with your local database credentials:
-```javascript
-const pool = new Pool({
-  user: 'your-postgres-user',
-  host: 'localhost',
-  database: 'food_ordering',
-  password: 'your-postgres-password',
-  port: 5432,
-});
+2. **Setup the PostgreSQL Database:**
+   Ensure PostgreSQL is running locally, then create the target database and execute the SQL schema script:
+   ```bash
+   # Create database
+   psql -U postgres -c "CREATE DATABASE quickbite_db;"
+
+   # Run schema migration and initial seeds
+   psql -U postgres -d quickbite_db -f backend/db_migration.sql
+   ```
+
+3. **Configure Backend Environment Variables:**
+   Create a `.env` file inside the project root:
+   ```bash
+   cp .env.example .env
+   ```
+
+4. **Launch the Backend API Server:**
+   ```bash
+   node backend/index.js
+   ```
+   The backend server will start at `http://localhost:5000`.
+
+---
+
+### Step 3: Frontend Setup
+
+1. **Start the Frontend Development Server:**
+   Open a separate terminal window and run:
+   ```bash
+   npm run dev
+   ```
+
+2. **Access the Web Application:**
+   Open your browser and navigate to `http://localhost:5173`.
+
+---
+
+## 🔑 Environment Variables
+
+Create a `.env` file in your root folder following this structure:
+
+```env
+# Database Configuration
+DATABASE_URL=postgresql://postgres:password@localhost:5432/quickbite_db
+
+# Security & Authentication
+JWT_SECRET=your_super_secret_jwt_key_change_in_production
+
+# Server Port Configuration
+PORT=5000
 ```
 
 ---
 
-## 🏃 Running the Application
+## 📡 API Overview
 
-### 1. Launch the Backend API Server
-```bash
-node backend/index.js
-```
-The server will start running at `http://localhost:5000`.
+QuickBite exposes a RESTful HTTP API following standard endpoint conventions. 
 
-### 2. Launch the React Frontend (Vite Dev Server)
-In a separate terminal, execute:
-```bash
-npm run dev
-```
-Open your browser and navigate to `http://localhost:5173`.
+<details>
+<summary><strong>🔍 Click to expand API Endpoint Reference</strong></summary>
 
----
+<br />
 
-## 🚀 Key Technical Achievements & Learning Outcomes
+| Category | HTTP Method | Endpoint Path | Description | Access Level |
+| :--- | :--- | :--- | :--- | :--- |
+| **Auth** | `POST` | `/api/auth/signup` | Register a new user account | Public |
+| **Auth** | `POST` | `/api/auth/login` | Authenticate user and issue JWT token | Public |
+| **Restaurants** | `GET` | `/restaurants` | Retrieve list of all available restaurants | Public |
+| **Restaurants** | `POST` | `/restaurants` | Create a new restaurant listing | Admin / Owner |
+| **Restaurants** | `PUT` | `/restaurants/:id` | Update restaurant details | Admin / Owner |
+| **Restaurants** | `DELETE` | `/restaurants/:id` | Delete restaurant listing | Admin |
+| **Menu** | `GET` | `/restaurants/:id/menu` | Retrieve menu items for a restaurant | Public |
+| **Menu** | `POST` | `/menu` | Add a new food item to a menu | Admin / Owner |
+| **Orders** | `POST` | `/orders` | Submit a new food order | Authenticated |
+| **Orders** | `GET` | `/orders/user/:userId` | Get order history for a specific customer | Authenticated |
+| **Admin** | `GET` | `/users` | List all registered user accounts | Admin |
+| **Admin** | `DELETE` | `/users/:id` | Remove a user account | Admin |
 
-*   **Role-Based Access Control (RBAC)**: Implemented front-end view protections that hide dashboards and settings unless a user holds explicit matching credentials (`admin` or `restaurant_owner`).
-*   **Dual Data Handling**: Designed views that dynamically connect to live database endpoints when available, while providing fallback visual options to demonstrate interface integrity.
-*   **Relational Schema Integrity**: Established cascading database keys that clean up corresponding menu items and order details when a restaurant or user account is deleted.
-
----
-
-## 🔮 Future Enhancements
-*   **Production Token Security**: Implement JSON Web Tokens (JWT) inside HTTP-only cookies to eliminate reliance on raw storage states.
-*   **Global Axios Interceptors**: Refactor standard `fetch` methods to run via a centralized Axios client handling errors globally.
-*   **Live Order Tracking**: Implement WebSocket channels to push status updates ("preparing", "out for delivery") to customers dynamically.
+</details>
 
 ---
 
-## 👤 Author
-*   **Aman Cutinha**
-*   [GitHub Profile](https://github.com/AmanCutinha)
-*   [LinkedIn Profile](https://linkedin.com/in/amancutinha)
+## 🚀 Future Improvements
+
+- 💳 **Online Payments**: Integration with Stripe or PayPal payment gateways for automated transaction processing.
+- 🔔 **Notifications**: Real-time push and email notifications for order confirmation and status updates.
+- ⭐ **Reviews & Ratings**: Customer rating and feedback module for restaurants and dish items.
+- 📍 **Live Order Tracking**: Interactive map integration with WebSockets for real-time delivery status updates.
+- 🤖 **Recommendation System**: ML-assisted food recommendation engine based on user preference history.
+- 🐳 **Docker Compose Deployment**: Single-command container orchestration for backend, frontend, and PostgreSQL database.
+- 🔄 **CI/CD Pipeline**: GitHub Actions workflows for automated testing, linting, and cloud deployments.
+
+---
+
+## 🎯 Learning Outcomes
+
+Building **QuickBite** provided practical hands-on experience in full-stack engineering principles required for scalable web products:
+
+- **End-to-End Type Safety**: Designing React interfaces backed by TypeScript interfaces to reduce runtime bugs.
+- **RESTful API Engineering**: Designing stateless backend endpoints adhering to standard HTTP verbs and status codes.
+- **Authentication & RBAC**: Implementing JWT validation middleware and securing routes based on user role authorizations.
+- **Relational Schema Normalization**: Designing PostgreSQL tables with primary/foreign keys and cascading operational constraints.
+- **Modern UI Component Systems**: Utilizing Tailwind CSS and ShadCN UI to craft responsive components.
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome! If you'd like to improve QuickBite, please follow these steps:
+
+1. **Fork the Repository**
+2. **Create a Feature Branch**: `git checkout -b feature/AmazingFeature`
+3. **Commit your Changes**: `git commit -m 'Add some AmazingFeature'`
+4. **Push to the Branch**: `git push origin feature/AmazingFeature`
+5. **Open a Pull Request**
